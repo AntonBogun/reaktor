@@ -1,0 +1,457 @@
+10 for x = 0 to 7
+11 for y = 0 to 15
+12 locate x+1, y+1
+13 print chr$((x*16)+y)
+19 next y
+20 next x
+
+dont actually need "next x", can just be "next"
+
+
+print bs:
+1 let bruh$ = "adisjqoijoifrjoijsfhjaklfdsak;sdlfdjeirouoepri"
+2 for x = 0 to 20: print bruh$ : next
+
+600 REM print maze
+610 REM clear the screen
+619 if steps=0 then
+620 CLS
+630 LOCATE 2,1 : REM top left corner of the maze
+640 FOR row = 0 TO height-1
+641 let prntrow$ = ""
+650   FOR col = 0 TO width-1
+710       LET cell = PEEK(16 + row * width + col)
+720       IF cell = 0 THEN prntrow$=prntrow$+" ";
+730       IF cell = 1 THEN prntrow$=prntrow$+"X";
+750   NEXT col
+760 PRINT prntrow$
+770 NEXT row
+771 end if
+772 if steps<>0 then
+773 if peek(0)=1 or peek(0)=3 then let xmove=0 : else let xmove=(peek(0)*-1)+1
+774 if peek(0)=0 or peek(0)=2 then let ymove=0 : else let ymove=((peek(0)-1)*-1)+1
+775 locate 2+peek(1)-ymove, 1+peek(2)-xmove : print " ";
+776 locate 1,1:print xmove; ymove; : REM bruh forgot :else
+779 end if
+784 locate 2+peek(1), 1+peek(2) : print "@";
+785 REM print some statistics on top
+790 LOCATE 1, 10 : PRINT "STEPS: "; steps
+800 steps = steps + 1
+810 RETURN
+
+REM singular print statement newline, r1=current column (1-based) the cursor is at
+
+1000 if r1<0 then r0=2 : else r0=1
+1001 r1=r1/10:if r1<>0 then r0=r0+1 :goto 1001: else r1 = r0 :return
+
+3000 newline$="":for x=r1 to peek(5):newline$=newline$+" ":next:return
+
+
+600 REM print maze
+610 REM clear the screen
+619 if steps=0 then
+620 CLS
+630 LOCATE 2,1 : REM top left corner of the maze
+640 FOR row = 0 TO height-1
+641 let prntrow$ = ""
+650   FOR col = 0 TO width-1
+710       LET cell = PEEK(16 + row * width + col)
+720       IF cell = 0 THEN prntrow$=prntrow$+" ";
+730       IF cell = 1 THEN prntrow$=prntrow$+"X";
+750   NEXT col
+760 PRINT prntrow$
+770 NEXT row
+771 end if
+772 if steps<>0 then
+773 if peek(0)=1 or peek(0)=3 then let xmove=0 : else let xmove=(peek(0)*-1)+1
+774 if peek(0)=0 or peek(0)=2 then let ymove=0 : else let ymove=((peek(0)-1)*-1)+1
+775 locate 2+peek(1)-xmove, 1+peek(2)-ymove : print " ";
+776 REM locate 1,1:print xmove; ymove; bruh forgot :else
+779 end if
+784 locate 2+peek(1), 1+peek(2) : print "@";
+785 REM print some statistics on top
+790 LOCATE 1, 10 : PRINT "STEPS: "; steps
+800 steps = steps + 1
+810 RETURN
+
+for later:
+
+6969 if peek(0)=1 or peek(0)=3 then let xmove=0 else let xmove=(peek(0)*-1)+1
+6970 if peek(0)=0 or peek(0)=2 then let ymove=0 else let ymove=((peek(0)-1)*-1)+1
+6971 RETURN
+
+
+
+REM max
+if r2>r1 then r1=r2
+RETURN
+
+gosub 'gosubtest' : gosub 'gosubtest'
+stop
+'gosubtest' print "hello" : return
+
+791 REM locate 1,1: print peek(14);" ";peek(15);
+792 REM locate 1,1: print peek(12);" ";peek(13);";";
+793 REM locate 1,1: print peek(1);" ";peek(2);
+794 REM print peek(10);" ";peek(11);
+795 REM locate 1,1: print peek(1);" ";peek(2);
+796 locate 1,1: print peek(16+peek(1)*peek(15)+peek(2));" ";peek(17+peek(1)*peek(15)+peek(2));
+
+
+for x=0 to sizex-1: prntout$="": for y=0 to sizey-1:
+if grid(x,y)=0 then x$="0"
+if grid(x,y)=1 then x$="1"
+if grid(x,y)=2 then x$="2"
+if grid(x,y)=3 then x$="3"
+prntout$=prntout$+x$:next:print prntout$:next
+locate peek(6),1: print "help";
+
+
+
+NOTE::::: WILL CRASH WHEN HAVING : WITH NOTHING AFTERWARDS
+IN "a and b" BOTH a AND b ARE EVALUATED, EVEN IF a IS FALSE
+ALWAYS CAGE EQUATIONS INSIDE IF IN BRACKETS - IT SEEMS LIKE AND HAS HIGHER PRECEDENCE THAN OTHER THINGS
+ON GOD, NEVER FORGET THE peek(16+) 
+
+worked:::??? ----------------------------------------------------------------
+
+600 REM print maze
+610 IF maze_drawn THEN GOTO 730
+620 LET maze_drawn = 1
+630 LET pr = PEEK(1) : LET pc = PEEK(2) : REM player row, column
+640 CLS : REM the first time around we need to draw the maze
+650 LOCATE 2,1
+660 FOR row = 0 TO height-1
+670     LET s$ = ""
+680     FOR col = 0 TO width-1
+690         LET cell = PEEK(16 + row * width + col)
+700         s$ = s$ + MID$(" X", cell, 1)
+710     NEXT col
+711     PRINT s$
+720 NEXT row
+730 REM erase the previous player position and print the new one
+740 LOCATE 2+pr, 1+pc : PRINT " ";
+750 pr = PEEK(1) : pc = PEEK(2)
+760 LOCATE 2+pr, 1+pc : PRINT "@";
+770 REM print the number of steps so far
+780 LOCATE 1,10 : PRINT "STEPS: "; steps;
+790 LET steps = steps + 1
+800 RETURN
+
+1000 REM calculate player direction
+1010 LET player_row = PEEK(1)
+1020 LET player_col = PEEK(2)
+1030 REM these variables tell whether there's a wall in that direction
+1040 LET right = PEEK(16 + player_row * width + player_col + 1)
+1050 LET down = PEEK(16 + (player_row+1) * width + player_col)
+1060 LET left = PEEK(16 + player_row * width + player_col - 1)
+1070 LET up = PEEK(16 + (player_row-1) * width + player_col)
+1080 REM TODO: write the next direction at memory address 0
+1090 REM directions: 0=right, 1=down, 2=left, 3=up
+
+1100 REM here's an interactive version
+1110 GET key
+1120 IF key = -2 THEN POKE 0, 1 : RETURN : REM no user present
+1130 IF key = -1 THEN PAUSE 100: GOTO 1110 : REM wait for input
+1140 IF key = 13 THEN STOP : REM user wants out
+1150 IF key = 0 THEN
+1160     IF right = 0 THEN GOTO 1250
+1170 ELSE IF key = 1 THEN
+1180     IF down = 0 THEN GOTO 1250
+1190 ELSE IF key = 2 THEN
+1200     IF left = 0 THEN GOTO 1250
+1210 ELSE IF key = 3 THEN
+1220     IF up = 0 THEN GOTO 1250
+1230 END IF
+1240 PAUSE 100 : GOTO 1110 : REM ignore key, wait for next one
+1250 POKE 0, key
+1251 GOSUB 1300
+1252 RETURN
+
+
+
+1300 REM find next rotation
+1300 goto 1308
+1301 if calc_path then goto 1308
+1302 calc_path = 1
+1303 gosub 1324
+1304 gosub 1329
+1305 gosub 1354
+1306 gosub 1440
+1307 gosub 1333
+1308 REM playerx=peek(2):playery=peek(1)
+1309 REM playerdir=grid(playerx,playery)
+1310 REM if playerdir=-1 then return
+1311 REM poke 0,playerdir
+1312 locate peek(6),1
+1313 REM print playerdir;
+1314 REM print sizex;";";sizey;";";endx;";";endy;";";
+1315 for x=0 to 9
+1317 print x;
+1318 next x
+1329 REM gosub 1333
+1330 return
+
+----------------------------------------------------------
+if r4<sizex-1 and grid(r4+1,r5)=0 then r1=grid(r4+1,r5):gosub 'add_printout':r1=r4+1 : r2=r5   : r3=2 : gosub 'insertright3'
+if r4>0       and grid(r4-1,r5)=0 then r1=grid(r4-1,r5):gosub 'add_printout':r1=r4-1 : r2=r5   : r3=0 : gosub 'insertright3'
+if r5<sizey-1 and grid(r4,r5+1)=0 then r1=grid(r4,r5+1):gosub 'add_printout':r1=r4   : r2=r5+1 : r3=3 : gosub 'insertright3'
+if r5>0       and grid(r4,r5-1)=0 then r1=grid(r4,r5-1):gosub 'add_printout':r1=r4   : r2=r5-1 : r3=1 : gosub 'insertright3'
+
+
+
+
+1 dim grid(1,1)
+2 print grid(0,0)
+3 if 1<2 and grid(0,0)=0 then print "uhoh"
+4 if 0 then print "hmmm" : gosub 1
+5 print "this code won't be executed lol"
+6 r4=100:sizex=6
+1393
+1451 if r4<sizex-1 and grid(r4+1,r5)=0 then r1=r4+1 : r2=r5   : r3=2 : gosub 1393
+1452 print "this line is not here?"
+
+
+1 dim grid(10,10)
+1393 return
+1451 if r4<sizex-1 and grid(r4+1,r5)=0 then r1=r4+1:r2=r5:r3=2:gosub 1393
+1452 print "this line is not here?"
+
+
+1 dim grid(10,10)
+1500 if r4<sizex-1 and grid(r4+1,r5)=0 then print "error"
+1505 print "this line is not here?"
+
+
+
+-----------------------
+
+
+600 REM print maze
+610 IF maze_drawn THEN GOTO 730
+620 LET maze_drawn = 1
+630 LET pr = PEEK(1) : LET pc = PEEK(2) : REM player row, column
+640 CLS : REM the first time around we need to draw the maze
+650 LOCATE 2,1
+660 FOR row = 0 TO height-1
+670     LET s$ = ""
+680     FOR col = 0 TO width-1
+690         LET cell = PEEK(16 + row * width + col)
+700         s$ = s$ + MID$(" X", cell, 1)
+710     NEXT col : PRINT s$
+720 NEXT row
+730 REM erase the previous player position and print the new one
+740 LOCATE 2+pr, 1+pc : PRINT " ";
+750 pr = PEEK(1) : pc = PEEK(2)
+760 LOCATE 2+pr, 1+pc : PRINT "@";
+770 REM print the number of steps so far
+780 LOCATE 1,10 : PRINT "STEPS: "; steps;
+790 LET steps = steps + 1
+800 RETURN
+
+1000 REM calculate player direction
+
+REM skip pointless logic
+goto 1300
+
+1010 LET player_row = PEEK(1)
+1020 LET player_col = PEEK(2)
+1030 REM these variables tell whether there's a wall in that direction
+1040 LET right = PEEK(16 + player_row * width + player_col + 1)
+1050 LET down = PEEK(16 + (player_row+1) * width + player_col)
+1060 LET left = PEEK(16 + player_row * width + player_col - 1)
+1070 LET up = PEEK(16 + (player_row-1) * width + player_col)
+1080 REM TODO: write the next direction at memory address 0
+1090 REM directions: 0=right, 1=down, 2=left, 3=up
+
+1100 REM here's an interactive version
+1110 GET key
+1120 IF key = -2 THEN POKE 0, 1 : RETURN : REM no user present
+1130 IF key = -1 THEN PAUSE 100: GOTO 1110 : REM wait for input
+1140 IF key = 13 THEN STOP : REM user wants out
+1150 IF key = 0 THEN
+1160     IF right = 0 THEN GOTO 1250
+1170 ELSE IF key = 1 THEN
+1180     IF down = 0 THEN GOTO 1250
+1190 ELSE IF key = 2 THEN
+1200     IF left = 0 THEN GOTO 1250
+1210 ELSE IF key = 3 THEN
+1220     IF up = 0 THEN GOTO 1250
+1230 END IF
+1240 PAUSE 100 : GOTO 1110 : REM ignore key, wait for next one
+1250 GOSUB 1300
+1251 REM POKE 0, key
+1252 RETURN
+
+
+
+1300 REM find next rotation
+if calc_path then goto 'skip_calc_path' : REM a way to call a subroutine
+calc_path = 1
+'init'()
+'create_grid'()
+'create_deque'()
+'find_path'()
+REM 'debug_printout'()
+def 'skip_calc_path' REM change peek(0) to direction in the cell (-1)
+playerx=peek(2):playery=peek(1)
+playerdir=grid(playerx,playery)-1
+if playerdir=-1 then return : REM reached target
+poke 0,playerdir
+REM locate peek(6),1
+REM print playerdir;
+REM print sizex;";";sizey;";";endx;";";endy;";";
+REM print r1;";";r2;";";r3;";";deqtest;
+REM 'debug_printout'()
+REM 'printout_stack'()
+return
+
+
+REM NOTE::
+REM for ... is inclusive
+REM dim ... isn't
+REM anything after REM is a comment
+
+def 'init' r1=0:r2=0:r3=0:r4=0:r5=0:r6=0:r7=0:r8=0:r9=0 : REM registers
+REM note: r0\d+ are not initialized as they are private variables and should be initialized inside the functions anyway
+sizex=peek(15):sizey=peek(14) : REM size of grid
+REM startx=peek(2):starty=peek(1) : REM start position, thought not used as find_path finds all paths
+endx=peek(13):endy=peek(12) : REM end position
+dim debugstack(500) : REM debug printout
+dspointer=0 : REM debug printout pointer
+return
+
+def 'add_printout' REM add r1 to debugstack
+debugstack(dspointer)=r1 : dspointer=dspointer+1
+return
+
+def 'printout_stack' REM and empty
+locate peek(6)-3,1
+for i=0 to dspointer-1
+    print debugstack(i);";";
+next i
+return
+
+
+def 'create_grid' dim grid(1)
+dim grid(sizex,sizey)
+for x=0 to sizex-1: for y=0 to sizey-1:grid(x,y)=peek(16+x+y*sizex):next:next
+return
+
+def 'debug_printout' locate 2,1 :REM begin of grid
+for y=0 to sizey-1 : prntout$="" : for x=0 to sizex-1
+if (x>=0) and (x<10) then x$=chr$(48+x):else x$="?"
+prntout$=prntout$+x$ : next x
+locate 2+y,1 : print prntout$; : next y
+return
+
+def 'create_deque' dim deque(1)
+dim deque(1000)
+dsize=1000:lend=0:rend=0
+return
+
+REM deque lend,rend point to [start,end) of deque
+REM isEmpty= (lend=rend)
+REM length is not implemented
+
+REM remake that takes less space
+def 'insertleft' r0=1:goto 'insertlmain'
+def 'insertleft2' r0=2:goto 'insertlmain'
+def 'insertleft3' r0=3:goto 'insertlmain'
+def 'insertlmain' if lend then lend=lend-1 : else lend=dsize-1
+deque(lend)=r1
+if r0<2 then return
+if lend then lend=lend-1 : else lend=dsize-1
+deque(lend)=r2
+if r0<3 then return
+if lend then lend=lend-1 : else lend=dsize-1
+deque(lend)=r3
+return
+
+
+def 'popright' r0=1:goto 'poprmain'
+def 'popright2' r0=2:goto 'poprmain'
+def 'popright3' r0=3:goto 'poprmain'
+def 'poprmain' if rend then rend=rend-1 : else rend=dsize-1
+r1=deque(rend)
+if r0<2 then return
+if rend then rend=rend-1 : else rend=dsize-1
+r2=deque(rend)
+if r0<3 then return
+if rend then rend=rend-1 : else rend=dsize-1
+r3=deque(rend)
+return
+
+def 'insertright' r0=1:goto 'insertrmain'
+def 'insertright2' r0=2:goto 'insertrmain'
+def 'insertright3' r0=3:goto 'insertrmain'
+def 'insertrmain' deque(rend)=r1
+if rend=dsize-1 then rend=0: else rend=rend+1
+if r0>=2 then deque(rend)=r2 : else return
+if rend=dsize-1 then rend=0: else rend=rend+1
+if r0>=3 then deque(rend)=r3 : else return
+if rend=dsize-1 then rend=0: else rend=rend+1
+return
+
+def 'popleft' r0=1:goto 'poplmain'
+def 'popleft2' r0=2:goto 'poplmain'
+def 'popleft3' r0=3:goto 'poplmain'
+def 'poplmain' r1=deque(lend)
+if lend=dsize-1 then lend=0: else lend=lend+1
+if r0>=2 then r2=deque(lend) : else return
+if lend=dsize-1 then lend=0: else lend=lend+1
+if r0>=3 then r3=deque(lend) : else return
+if lend=dsize-1 then lend=0: else lend=lend+1
+return
+
+REM deque length = lend-rend, isempty = lend=rend
+
+def 'decode' REM take integer in r1 (32 signed) and decode into r1(0:14),r2(15:29) (15 unsigned)
+REM there are no bitwise operations, so we have to do it manually
+r2=r1/32768
+r1=r1-(r1/32768*32768)
+return
+def 'encode' REM take r1(0:14),r2(15:29) and encode into integer r1
+r1=r1+r2*32768
+return
+
+REM convert int 0-3 to 1,0,-1,0 : abs(2-x)-1
+REM convert int 0-3 to 0,1,0,-1 : 1-abs(x-1)
+
+
+def 'numlen' if r1<0 then r0=2 : else r0=1
+r1=r1/10:if r1<>0 then r0=r0+1 :goto 'numlen': else r1 = r0 :return
+REM calculates the number of digits in r1, returns r1
+
+def 'newline' newline$="":for x=r1 to peek(5):newline$=newline$+" ":next:return
+REM returns spaces to add to a string to act as a newline in singular printout, r1=current column (1-based) the cursor is at
+
+
+def 'add_neighbours' REM add neighbours (if not visited) of cell (r1,r2) to deque
+REM have to make dir+1 as otherwise 0 would be counted as nothing
+r3=r1:r4=r2
+if r3<(sizex-1) then
+if grid(r3+1,r4)=0 then 'insertright2'(r3+1,r4):grid(r3+1,r4)=3
+end if
+if r3>0 then
+if grid(r3-1,r4)=0 then 'insertright2'(r3-1,r4):grid(r3-1,r4)=1
+end if
+if r4<(sizey-1) then
+if grid(r3,r4+1)=0 then 'insertright2'(r3,r4+1):grid(r3,r4+1)=4
+end if
+if r4>0 then
+if grid(r3,r4-1)=0 then 'insertright2'(r3,r4-1):grid(r3,r4-1)=2
+end if
+REM why are both parts of an and evaluated, even if one is false?
+return
+
+
+def 'find_path' REM put 1:4 (0:3-1) into grid, which lead to end position (uses BFS)
+REM visited(x,y) = if grid(x,y) is not zero
+REM end cell is -1
+'add_neighbours'(endx,endy)
+grid(endx,endy)=-1
+def 'whiledeque' if (lend=rend) then return
+'popleft2'()
+'add_neighbours'()
+goto 'whiledeque'

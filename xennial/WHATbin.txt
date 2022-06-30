@@ -1,0 +1,250 @@
+600 REM print maze
+610 IF maze_drawn THEN GOTO 730
+620 LET maze_drawn = 1
+630 LET pr = PEEK(1) : LET pc = PEEK(2) : REM player row, column
+640 CLS : REM the first time around we need to draw the maze
+650 LOCATE 2,1
+660 FOR row = 0 TO height-1
+670     LET s$ = ""
+680     FOR col = 0 TO width-1
+690         LET cell = PEEK(16 + row * width + col)
+700         s$ = s$ + MID$(" X", cell, 1)
+710     NEXT col : PRINT s$
+720 NEXT row
+730 REM erase the previous player position and print the new one
+740 LOCATE 2+pr, 1+pc : PRINT " ";
+750 pr = PEEK(1) : pc = PEEK(2)
+760 LOCATE 2+pr, 1+pc : PRINT "@";
+770 REM print the number of steps so far
+780 LOCATE 1,10 : PRINT "STEPS: "; steps;
+790 LET steps = steps + 1
+800 RETURN
+
+1000 REM calculate player direction
+1010 LET player_row = PEEK(1)
+1020 LET player_col = PEEK(2)
+1030 REM these variables tell whether there's a wall in that direction
+1040 LET right = PEEK(16 + player_row * width + player_col + 1)
+1050 LET down = PEEK(16 + (player_row+1) * width + player_col)
+1060 LET left = PEEK(16 + player_row * width + player_col - 1)
+1070 LET up = PEEK(16 + (player_row-1) * width + player_col)
+1080 REM TODO: write the next direction at memory address 0
+1090 REM directions: 0=right, 1=down, 2=left, 3=up
+
+1100 REM here's an interactive version
+1110 GET key
+1120 IF key = -2 THEN POKE 0, 1 : RETURN : REM no user present
+1130 IF key = -1 THEN PAUSE 100: GOTO 1110 : REM wait for input
+1140 IF key = 13 THEN STOP : REM user wants out
+1150 IF key = 0 THEN
+1160     IF right = 0 THEN GOTO 1250
+1170 ELSE IF key = 1 THEN
+1180     IF down = 0 THEN GOTO 1250
+1190 ELSE IF key = 2 THEN
+1200     IF left = 0 THEN GOTO 1250
+1210 ELSE IF key = 3 THEN
+1220     IF up = 0 THEN GOTO 1250
+1230 END IF
+1240 PAUSE 100 : GOTO 1110 : REM ignore key, wait for next one
+1250 POKE 0, key
+1251 GOSUB 1300
+1252 RETURN
+
+
+
+1300 REM find next rotation
+1300 if calc_path then goto 1315
+1301 calc_path = 1
+1302 gosub 1330
+1303 gosub 1346
+1304 gosub 1363
+1305 REM if (lend=rend) then deqtest = deqtest+1
+1306 REM r1=-1:r2=9:r3=38283928
+1307 REM gosub 1393
+1308 REM if (lend=rend) then deqtest = deqtest+2
+1309 REM r1=0:r2=0:r3=0
+1310 REM gosub 1410
+1311 REM if (lend=rend) then deqtest = deqtest+4
+1312 gosub 1460
+1313 gosub 1350
+1314 goto 1315
+1315 REM playerx=peek(2):playery=peek(1)
+1316 REM playerdir=grid(playerx,playery)
+1317 REM if playerdir=-1 then return
+1318 REM poke 0,playerdir
+1319 locate peek(6),1
+1320 REM print playerdir;
+1321 REM print sizex;";";sizey;";";endx;";";endy;";";
+1322 REM print r1;";";r2;";";r3;";";deqtest;
+1323 REM gosub 1350
+1324 gosub 1340
+1325 return
+
+
+1326 REM NOTE::
+1327 REM for is inclusive
+1328 REM dim ... isn't
+1329 REM anything after REM is a comment
+
+1330 r1=0:r2=0:r3=0:r4=0:r5=0 : REM registers
+1331 sizex=peek(15):sizey=peek(14) : REM size of grid
+1332 REM startx=peek(2):starty=peek(1) : REM start position, thought not used as find_path finds all paths
+1333 endx=peek(13):endy=peek(12) : REM end position
+1334 dim debugstack(500) : REM debug printout
+1335 dspointer=0 : REM debug printout pointer
+1336 return
+
+1337 REM add r1 to debugstack
+1338 debugstack(dspointer)=r1 : dspointer=dspointer+1
+1339 return
+
+1340 REM and empty
+1341 locate peek(6)-1,1
+1342 for i=0 to dspointer-1
+1343     print debugstack(i);";";
+1344 next i
+1345 return
+
+
+1346 dim grid(1)
+1347 dim grid(sizex,sizey)
+1348 for x=0 to sizex-1: for y=0 to sizey-1:grid(x,y)=peek(16+x+y*sizex):next:next
+1349 return
+
+1350 locate 2,1 :REM begin of grid
+1351 REM locate peek(6),1
+1352 for y=0 to sizey-1 : prntout$="" : for x=0 to sizex-1
+1353 x$="?"
+1354 if grid(x,y)=0 then x$="0"
+1355 if grid(x,y)=1 then x$="1"
+1356 if grid(x,y)=2 then x$="2"
+1357 if grid(x,y)=3 then x$="3"
+1358 prntout$=prntout$+x$ : next x
+1359 locate 2+y,1 : print prntout$; : next y
+1360 REM locate peek(6),1
+1361 REM print "help";k;
+1362 return
+
+1363 dim deque(1)
+1364 dim deque(1000)
+1365 dsize=1000
+1366 lend=0:rend=0
+1367 return
+
+1368 REM insert r1 left into deque
+1369 deque(lend)=r1
+1370 if lend then lend=lend-1 : else lend=dsize-1
+1371 return
+1372 deque(lend)=r1
+1373 if lend then lend=lend-1 : else lend=dsize-1
+1374 deque(lend)=r2
+1375 if lend then lend=lend-1 : else lend=dsize-1
+1376 return
+1377 deque(lend)=r1 : REM painful, but the other option is even more painful
+1378 if lend then lend=lend-1 : else lend=dsize-1
+1379 deque(lend)=r2
+1380 if lend then lend=lend-1 : else lend=dsize-1
+1381 deque(lend)=r3
+1382 if lend then lend=lend-1 : else lend=dsize-1
+1383 return
+
+1384 REM insert r1 right into the deque
+1385 deque(rend)=r1
+1386 if rend=dsize-1 then rend=0: else rend=rend+1
+1387 return
+1388 deque(rend)=r1
+1389 if rend=dsize-1 then rend=0: else rend=rend+1
+1390 deque(rend)=r2
+1391 if rend=dsize-1 then rend=0: else rend=rend+1
+1392 return
+1393 deque(rend)=r1
+1394 r1=7:gosub 1337
+1395 if rend=dsize-1 then rend=0: else rend=rend+1
+1396 deque(rend)=r2
+1397 if rend=dsize-1 then rend=0: else rend=rend+1
+1398 deque(rend)=r3
+1399 if rend=dsize-1 then rend=0: else rend=rend+1
+1400 return
+
+
+1401 REM return r1 from left of deque
+1402 r1=deque(lend)
+1403 if lend=dsize-1 then lend=0: else lend=lend+1
+1404 return
+1405 r1=deque(lend)
+1406 if lend=dsize-1 then lend=0: else lend=lend+1
+1407 r2=deque(lend)
+1408 if lend=dsize-1 then lend=0: else lend=lend+1
+1409 return
+1410 r1=deque(lend)
+1411 if lend=dsize-1 then lend=0: else lend=lend+1
+1412 r2=deque(lend)
+1413 if lend=dsize-1 then lend=0: else lend=lend+1
+1414 r3=deque(lend)
+1415 if lend=dsize-1 then lend=0: else lend=lend+1
+1416 return
+
+1417 REM return r1 from right of deque
+1418 r1=deque(rend)
+1419 if rend=0 then rend=dsize-1: else rend=rend-1
+1420 return
+1421 r1=deque(rend)
+1422 if rend=0 then rend=dsize-1: else rend=rend-1
+1423 r2=deque(rend)
+1424 if rend=0 then rend=dsize-1: else rend=rend-1
+1425 return
+1426 r1=deque(rend)
+1427 if rend=0 then rend=dsize-1: else rend=rend-1
+1428 r2=deque(rend)
+1429 if rend=0 then rend=dsize-1: else rend=rend-1
+1430 r3=deque(rend)
+1431 if rend=0 then rend=dsize-1: else rend=rend-1
+1432 return
+
+1433 REM deque length = lend-rend, isempty = lend=rend
+
+1434 REM take integer in r1 (32 signed) and decode into r1(0:14),r2(15:29) (15 unsigned)
+1435 REM there are no bitwise operations, so we have to do it manually
+1436 r2=r1/32768
+1437 r1=r1-(r1/32768*32768)
+1438 return
+1439 REM take r1(0:14),r2(15:29) and encode into integer r1
+1440 r1=r1+r2*32768
+1441 return
+
+1442 REM convert int 0-3 to 1,0,-1,0 : abs(2-x)-1
+1443 REM convert int 0-3 to 0,1,0,-1 : 1-abs(x-1)
+
+
+1444 REM add neighbours (if not visited) of cell (r4,r5) to deque
+1445 REM r1=r4:gosub 1337:r1=r5:gosub 1337 : REM 48,31
+1446 REM r1=sizex-1:gosub 1337:r1=sizey-1:gosub 1337 : REM 48,32
+1447 REM r1=grid(r4-1,r5):gosub 1337 : REM 0
+1448 REM r1=grid(r4,r5+1):gosub 1337 : REM 1
+1449 REM r1=grid(r4,r5-1):gosub 1337 : REM 1
+1450 REM if r4>0 then r1=100:gosub 1337 : REM
+1451 if r4<sizex-1 and grid(r4+1,r5)=0 then r1=r4+1 : r2=r5   : r3=2 : gosub 1393
+1452 r1 = 66 : gosub 1337 : REM THIS IS NOT EXECUTED??? 
+1453 r1 = 66 : gosub 1337 : REM THIS IS NOT EXECUTED??? 
+1454 REM if grid(r4-1,r5)=0 then r1=101:gosub 1337 : REM
+1455 REM if r4>0       and grid(r4-1,r5)=0 then r1=r4-1 : r2=r5   : r3=0 : gosub 1337
+1456 if r4>0       and grid(r4-1,r5)=0 then r1=r4-1 : r2=r5   : r3=0 : gosub 1393
+1457 if r5<sizey-1 and grid(r4,r5+1)=0 then r1=r4   : r2=r5+1 : r3=3 : gosub 1393
+1458 if r5>0       and grid(r4,r5-1)=0 then r1=r4   : r2=r5-1 : r3=1 : gosub 1393
+1459 return
+
+
+1460 REM put 1:4 (0:3-1) into grid, which lead to end position (uses BFS)
+1461 REM visited(x,y) = if grid(x,y) is not zero
+1462 REM end cell is -1
+1463 r4=endx:r5=endy:gosub 1444
+1464 grid(endx,endy)=-1
+1465 if lend=rend then r1=0 : else r1=1
+1466 gosub 1337
+1467 if (lend=rend) then return
+1468 r1=9:gosub 1337
+1469 gosub 1410
+1470 if peek(r1+r2*sizex) then goto 1467
+1471 grid(r1,r2)=r3
+1472 r4=r1:r5=r2:gosub 1444
+1473 goto 1467
