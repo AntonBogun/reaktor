@@ -1,0 +1,66 @@
+def 'init_vector' if r1<1 then r1=1
+    dim vec(0) : dim vec(r1) : REM clear vector and allocate new space
+    REM print vec(0)
+    vsize=0 : valloc=r1 : return
+
+
+REM r1=vector size, >0, unchanged; variables vsize=stores vector size, valloc=stores allocated size
+def 'resize_vector' if r1<1 then r1=1
+    if (r1>=(valloc/4)) and (r1<=valloc) then
+        if vsize>r1 then vsize=r1 : REM size within "buffer", do nothing
+        return
+    else if r1<(valloc/4) then
+        dim vectemp(r1) : REM size below "buffer", shrink
+        for veciter=0 to r1-1 : vectemp(veciter)=vec(veciter) : next veciter
+        dim vec(0) : dim vec(valloc/2)
+        for veciter=0 to r1-1 : vec(veciter)=vectemp(veciter) : next veciter
+        if vsize>r1 then vsize=r1 
+        valloc=valloc/2 : dim vectemp(0) : return : REM update vec info and remove temp vector
+    else if r1>valloc then
+        dim vectemp(r1) : REM size above "buffer", grow
+        for veciter=0 to vsize-1 : vectemp(veciter)=vec(veciter) : next veciter
+        dim vec(0) : dim vec(valloc*2)
+        for veciter=0 to vsize-1 : vec(veciter)=vectemp(veciter) : next veciter
+        valloc=valloc*2 : dim vectemp(0) : return
+    end if
+
+
+
+def 'vpush_back' r0=1:goto 'vpush_back_main'
+def 'vpush_back2' r0=2:goto 'vpush_back_main'
+def 'vpush_back_main' temp=r1
+    if vsize=valloc then 'resize_vector'(vsize*2) : REM if vector is full, double its size
+    vec(vsize)=temp : vsize=vsize+1
+    if r0<2 then return
+    if vsize=valloc then 'resize_vector'(vsize*2)
+    vec(vsize)=r2 : vsize=vsize+1
+    return
+
+def 'vpdel_back' r0=1:goto 'vpdel_back_main'
+def 'vpdel_back2' r0=2:goto 'vpdel_back_main'
+def 'vpdel_back_main' if vsize>0 then vsize=vsize-1
+    if vsize<>0 then 'resize_vector'(vsize)
+    if r0<2 then return
+    if vsize>0 then vsize=vsize-1
+    if vsize<>0 then 'resize_vector'(vsize)
+    return
+
+
+def 'vback' r1=vec(vsize-1) : return : REM maybe better to be done manually
+
+def 'vpop_back' r0=1:goto 'vpop_back_main'
+def 'vpop_back2' r0=2:goto 'vpop_back_main'
+def 'vpop_back_main' if vsize=0 then return
+    vsize=vsize-1:temp=vec(vsize)
+    if vsize<>0 then 'resize_vector'(vsize)
+    r1=temp
+    if r0<2 then return
+    r2=temp:r1=0
+    if vsize=0 then return
+    vsize=vsize-1:temp=vec(vsize)
+    if vsize<>0 then 'resize_vector'(vsize)
+    r1=temp
+    return
+
+def 'print_vector' for veciter=0 to vsize-1 : print vec(veciter);";"; : next veciter
+    return

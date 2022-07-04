@@ -45,7 +45,7 @@ REM singular print statement newline, r1=current column (1-based) the cursor is 
 1001 r1=r1/10:if r1<>0 then r0=r0+1 :goto 1001: else r1 = r0 :return
 
 3000 newline$="":for x=r1 to peek(5):newline$=newline$+" ":next:return
-
+3100 r1=r1-((r1/r2)*r2):return
 
 600 REM print maze
 610 REM clear the screen
@@ -111,7 +111,9 @@ locate peek(6),1: print "help";
 NOTE::::: WILL CRASH WHEN HAVING : WITH NOTHING AFTERWARDS
 IN "a and b" BOTH a AND b ARE EVALUATED, EVEN IF a IS FALSE
 ALWAYS CAGE EQUATIONS INSIDE IF IN BRACKETS - IT SEEMS LIKE AND HAS HIGHER PRECEDENCE THAN OTHER THINGS
-ON GOD, NEVER FORGET THE peek(16+) 
+ON GOD, NEVER FORGET THE peek(16+)
+IN for x ... : for y ... : DOING next x:next y LEAKS FOR LOOPS
+NOTE ALSO THAT THE FOR LIMIT IS ABYSMAL (16)
 
 worked:::??? ----------------------------------------------------------------
 

@@ -1,0 +1,32 @@
+
+'init_vector'(10)
+
+print vsize
+print valloc
+for x=0 to 100
+    'vpush_back2'(x,x*2)
+next x
+print vsize
+print valloc
+for x=0 to 100
+    'vpop_back2'()
+    REM print r1;":";r2;";"
+next x
+print ""
+print vsize
+print valloc
+for x=0 to 100
+    'vpush_back'(x*100-(x*100/31)*31)
+next x
+print vsize
+print valloc
+for x=0 to 100
+    'vpop_back'()
+    print r1;";";
+next x
+print ""
+print vsize
+print valloc
+stop
+
+import vector

@@ -1,5 +1,7 @@
 3000 REM find next rotation
 
+
+'init_debug_stack'()
 goto 'skip_debug'
 
 def 'debug' 'init'()
@@ -13,13 +15,13 @@ if calc_path then goto 'skip_calc_path' : REM a way to call a subroutine
 calc_path = 1
 'init'()
 'create_grid'()
-'create_deque'()
 'find_path'()
 REM 'debug_printout'()
 def 'skip_calc_path' REM change peek(0) to direction in vector
-if grid(peek())
-if playerpos=vsize then 'find_path'() : playerpos=0
+if playerpos<0 then 'find_path'()
+REM 'printout_stack'()
 playerdir=vec(playerpos)
+playerpos=playerpos-1
 poke 0,playerdir
 REM locate peek(6),1
 REM print playerdir;
@@ -44,8 +46,6 @@ def 'init' r1=0:r2=0:r3=0:r4=0:r5=0:r6=0:r7=0:r8=0:r9=0 : REM registers
 REM note: r0\d+ are not initialized as they are private variables and should be initialized inside the functions anyway
 sizex=peek(15):sizey=peek(14) : REM size of grid
 endx=peek(13):endy=peek(12) : REM end position
-REM dim debugstack(500) : REM debug printout
-REM dspointer=0 : REM debug printout pointer
 dim dir_to_xy(4,2)
 dir_to_xy(0,0)=1:dir_to_xy(0,1)=0
 dir_to_xy(1,0)=0:dir_to_xy(1,1)=1
@@ -53,12 +53,16 @@ dir_to_xy(2,0)=-1:dir_to_xy(2,1)=0
 dir_to_xy(3,0)=0:dir_to_xy(3,1)=-1
 return
 
+def 'init_debug_stack' dim debugstack(500) : REM debug printout
+dspointer=0 : REM debug printout pointer
+return
+
 def 'add_printout' REM add r1 to debugstack
 debugstack(dspointer)=r1 : dspointer=dspointer+1
 return
 
 def 'printout_stack' REM and empty
-locate peek(6)-3,1
+locate 1,1
 for i=0 to dspointer-1
     print debugstack(i);";";
 next i
@@ -72,19 +76,20 @@ dim grid(sizex,sizey)
 dim doors(10,2)
 treasures=0
 for x=0 to sizex-1: for y=0 to sizey-1
-real=peek(16+x+y*sizex)
-if real=0 then 
-grid(x,y)=0
-else if real=1 then
-grid(x,y)=-1
-else if real>=20 then
-doors(real-20,0)=x : doors(real-20,1)=y : grid(x,y)=-1
-else if real=2 then
-grid(x,y)=-2 : treasures=treasures+1
-else if (real>=10 and real<20) then
-grid(x,y)=-3
-end if
-next:next
+    real=peek(16+x+y*sizex)
+    if real=0 then 
+    grid(x,y)=0
+    else if real=1 then
+    grid(x,y)=-1
+    else if real>=20 then
+    doors(real-20,0)=x : doors(real-20,1)=y : grid(x,y)=-1
+    else if real=2 then
+    grid(x,y)=-2 : treasures=treasures+1
+    else if (real>=10 and real<20) then
+    grid(x,y)=-3
+    end if
+    next y
+next x
 collectedtreasures=0
 grid(endx,endy)=-4
 return
@@ -94,7 +99,8 @@ import vector
 def 'find_keys_doors' 'init_vector'(10) : REM initial size doesn't matter, because it is dynamically resized
 for x=0 to sizex-1: for y=0 to sizey-1
     if grid(x,y)>=10 then 'vpush_back2'(x,y)
-next:next
+    next y
+next x
 return
 
 def 'print_keys_doors' for x=0 to ((vsize/2)-1)
@@ -130,38 +136,77 @@ def 'numlen' if r1<0 then r0=2 : else r0=1
 r1=r1/10:if r1<>0 then r0=r0+1 :goto 1001: else r1 = r0 :return
 REM calculates the number of digits in r1, returns r1
 
-def 'newline' newline$="":for x=r1 to peek(5):newline$=newline$+" ":next:return
+def 'newline' newline$="":for x=r1 to peek(5):newline$=newline$+" ":next x:return
 REM returns spaces to add to a string to act as a newline in singular printout, r1=current column (1-based) the cursor is at
 
 def 'mod' r1=r1-((r1/r2)*r2):return
 
 def 'add_neighbours' REM add neighbours (if not visited) of cell (r1,r2) to deque
 REM have to make dir+1 as otherwise 0 would be counted as nothing
-r3=r1:r4=r2
-if r3<(sizex-1) then
-if grid(r3+1,r4)=0 then 'deqinsertright2'(r3+1,r4):grid(r3+1,r4)=3
-end if
-if r3>0 then
-if grid(r3-1,r4)=0 then 'deqinsertright2'(r3-1,r4):grid(r3-1,r4)=1
-end if
-if r4<(sizey-1) then
-if grid(r3,r4+1)=0 then 'deqinsertright2'(r3,r4+1):grid(r3,r4+1)=4
-end if
-if r4>0 then
-if grid(r3,r4-1)=0 then 'deqinsertright2'(r3,r4-1):grid(r3,r4-1)=2
-end if
-REM why are both parts of an and evaluated, even if one is false?
-return
+r4=r1:r5=r2
+REM 'add_printout'(-r4):'add_printout'(-r5)
+dir=-1
+def 'dir_while' dir=dir+1:if dir>3 then return
+    REM if found then 'add_printout'(200)
+    if found then return
+    newx=r4+dir_to_xy(dir,0) : newy=r5+dir_to_xy(dir,1)
+    REM if newx<0 or newy<0 then 'printout_stack'()
+    gridd=grid(newx,newy) : REM compiler error on "else if grid(newx,newy)"
+    REM 'add_printout'(newx):'add_printout'(newy):'add_printout'(gridd)
+    if gridd=0 then
+    'deqinsertright2'(newx,newy)
+    grid(newx,newy)=((dir+2)-((dir+2)/4*4))+1
+    REM 'add_printout'(100+grid(newx,newy))
+    else if gridd<-1 then
+        if gridd=-2 then
+        collectedtreasures=collectedtreasures+1
+        else if gridd=-3 then
+        if collectedtreasures=treasures then goto 'dir_while'
+        curkey=peek(16+newx+newy*sizex)
+        grid(doors(curkey-10,0),doors(curkey-10,1))=0
+        else if gridd=-4 then
+        if collectedtreasures<>treasures then goto 'dir_while'
+        end if
+        found=1
+        REM 'printout_stack'()
+        'make_path'(newx,newy,dir)
+        playerpos=vsize-1
+        grid(newx,newy)=0
+        'clean_grid'()
+    end if
+    goto 'dir_while'
 
+
+def 'make_path' REM add path to vector
+currx=r1:curry=r2:currdir=(r3+2)-((r3+2)/4*4) : REM passed-in direction is reversed
+REM 'add_printout'(currdir)
+currx=currx+dir_to_xy(currdir,0) : curry=curry+dir_to_xy(currdir,1)
+'init_vector'(10)
+'vpush_back'((currdir+2)-((currdir+2)/4*4)) : REM reverse direction again for path
+def 'pathwhile' if currx=startx and curry=starty then return
+currdir=grid(currx,curry)-1
+REM 'add_printout'(currdir)
+'vpush_back'(currdir+2-(currdir+2)/4*4)
+REM if currdir<0 then 'printout_stack'()
+currx=currx+dir_to_xy(currdir,0) : curry=curry+dir_to_xy(currdir,1)
+goto 'pathwhile'
+
+def 'clean_grid' REM remove all visited cells from grid
+for x=0 to sizex-1: for y=0 to sizey-1
+    if grid(x,y)>=0 then grid(x,y)=0
+    next y
+next x
+return
 
 def 'find_path' REM put 1:4 (0:3-1) into grid, which lead to end position (uses BFS)
 REM visited(x,y) = if grid(x,y) is not zero
-REM end cell is -1
 startx=peek(2):starty=peek(1) : REM start position
-'add_neighbours'(endx,endy)
-grid(endx,endy)=-1
-def 'whiledeque' if (lend=rend) then return
+REM grid(startx,starty)=1 : REM mark start position as visited
+found=0
+'create_deque'()
+'add_neighbours'(startx,starty)
+def 'whiledeque' if found or (lend=rend) then return
 'deqpopleft2'()
-if r1=startx and r2=starty then return
 'add_neighbours'()
+REM if lend=rend then 'add_printout'(999)
 goto 'whiledeque'
