@@ -1,0 +1,29 @@
+600 REM print maze
+610 REM clear the screen
+620 CLS
+630 LOCATE 2,1 : REM top left corner of the maze
+631 total$=""
+640 FOR row = 0 TO height-1
+641 let prntrow$ = ""
+650   FOR col = 0 TO width-1
+710       LET cell = PEEK(16 + row * width + col)
+720       IF cell = 0 THEN prntrow$=prntrow$+" ";
+730       IF cell = 1 THEN prntrow$=prntrow$+"X";
+750   NEXT col
+751 r1=width+1:gosub 3000
+760 total$=total$+prntrow$+newline$
+770 NEXT row
+771 print total$
+772 if steps<>0 then
+773 if peek(0)=1 or peek(0)=3 then let xmove=0 : else let xmove=(peek(0)*-1)+1
+774 if peek(0)=0 or peek(0)=2 then let ymove=0 : else let ymove=((peek(0)-1)*-1)+1
+775 locate 2+peek(1)-ymove, 1+peek(2)-xmove : print " ";
+776 locate 1,1:print xmove; ymove; : REM bruh forgot :else
+779 end if
+784 locate 2+peek(1), 1+peek(2) : print "@";
+785 REM print some statistics on top
+790 LOCATE 1, 10 : PRINT "STEPS: "; steps
+800 steps = steps + 1
+810 RETURN
+
+3000 newline$="":for x=r1 to peek(5):newline$=newline$+" ":next:return
